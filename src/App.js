@@ -1,8 +1,9 @@
 import { apiClient } from './services/api';
 import React, { useEffect, useState } from 'react';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
-import { Box, Button, Card, CardContent, CardMedia, Container, Grid, Modal, TextField, Typography } from '@mui/material';
+import { Box, Button, Card, CardContent, CardMedia, Container, Grid, IconButton, Modal, TextField, Typography } from '@mui/material';
 import { CircularProgress, Pagination, Stack } from '@mui/material';
+import { Close } from '@mui/icons-material';
 import './style.css';
 
 function App() {
@@ -28,14 +29,20 @@ function App() {
     setOpen(false)
   };
 
+  function handleKeyPress(inputValue, event) {
+    if (event.key === 'Enter') {
+      getInfo()
+    }
+  }
+
   const handleChangePage = (event, page) => {
     setPage(page);
   };
 
-  const handleChangeRowsPerPage = async (event) => {
+  /* const handleChangeRowsPerPage = async (event) => {
     setRowsPerPage(+event.target.value);
     //setPage(0);
-  };
+  }; */
 
   const getInfo = (type = null) => {
     if (type) {
@@ -69,8 +76,9 @@ function App() {
         }
       })
       .catch(error => {
+        setLoading(false)
         console.log(error)
-      });
+      })
   }
 
   useEffect(() => {
@@ -86,10 +94,10 @@ function App() {
         <Grid container spacing={2} padding={4} justifyContent={'center'}>
           <Grid container xs={12} md={8} spacing={2} justifyContent={'left'}>
             <Grid item xs={12} md={5}>
-              <TextField id="search-name" label="Nome" variant="outlined" color="secondary" size="small" value={searchName} onChange={ev => setSearchName(ev.target.value)} />
+              <TextField id="search-name" label="Nome" variant="outlined" color="secondary" size="small" value={searchName} onChange={ev => setSearchName(ev.target.value)} onKeyUp={event => handleKeyPress(event.target.value, event)} />
             </Grid>
             <Grid item xs={12} md={5}>
-              <TextField id="search-state" label="Estado" variant="outlined" color="secondary" size="small" value={searchState} onChange={ev => setSearchState(ev.target.value)} />
+              <TextField id="search-state" label="Estado" variant="outlined" color="secondary" size="small" value={searchState} onChange={ev => setSearchState(ev.target.value)} onKeyUp={event => handleKeyPress(event.target.value, event)} />
             </Grid>
           </Grid>
           <Grid container xs={12} md={4} spacing={2} justifyContent={'right'}>
@@ -125,7 +133,6 @@ function App() {
                       {row.location.state.toUpperCase()}
                     </TableCell>
                     <TableCell key={row.id}>
-                      <Button onClick={() => handleOpen(row)}>Exibir</Button>
                       <Button onClick={() => handleOpen(row)}>Abrir</Button>
                     </TableCell>
                   </TableRow>
@@ -165,7 +172,13 @@ function App() {
       >
         <Box className="card-modal">
           <Card sx={{ maxWidth: 345 }}>
-            <Button size="small" onClick={() => handleClose()}></Button>
+            <Grid container direction="row" justifyContent="end" alignItems="end" bgcolor={'#fff'}>
+              <Grid item>
+                <IconButton aria-label="close" onClick={() => handleClose()}>
+                  <Close />
+                </IconButton>
+              </Grid>
+            </Grid>
             <CardMedia
               component="img"
               alt="green iguana"
